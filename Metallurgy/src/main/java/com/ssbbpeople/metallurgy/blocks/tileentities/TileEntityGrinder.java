@@ -458,6 +458,7 @@ public class TileEntityGrinder extends TileEntity implements IInventory, ISidedI
                 return (T) handlerSide;
         return super.getCapability(capability, facing);
     }
+    
 	//NBT Tags
 	private ItemStackHandler inventory = new ItemStackHandler(1);
 

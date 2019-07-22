@@ -21,12 +21,13 @@ public class ContainerGrinder extends Container {
 	private IInventory TileEntityGrinder;
 	GrinderTileEntity tileentity;
     private IItemHandler InvHandler;
+    private final IInventory tileFurnace;
 	private int cookTime, totalCookTime, ovenBurnTime, currentItemBurnTime;
 	
 	public ContainerGrinder(InventoryPlayer playerInventory, IInventory furnaceInventory, GrinderTileEntity containerTileEntity) 
 	{
 		this.tileentity = containerTileEntity;
-		this.TileEntityGrinder = furnaceInventory;
+		this.tileFurnace = furnaceInventory;
 		this.addSlotToContainer(new Slot(furnaceInventory, 0, 56, 17));
 		this.addSlotToContainer(new SlotGrinderFuel(furnaceInventory, 1, 56, 53));
 		this.addSlotToContainer(new SlotGrinderOutput(playerInventory.player, furnaceInventory, 2, 116, 35));
@@ -47,7 +48,7 @@ public class ContainerGrinder extends Container {
 	
 	public ContainerGrinder(IInventory playerInventory, IInventory furnaceInventory, GrinderTileEntity containerTileEntity) {
 		this.tileentity = containerTileEntity;
-		this.TileEntityGrinder = furnaceInventory;
+		this.tileFurnace = furnaceInventory;
         this.InvHandler = ((ICapabilityProvider) tileentity).getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
 	}
 
@@ -200,6 +201,7 @@ public class ContainerGrinder extends Container {
 	public ContainerGrinder(InventoryPlayer playerInventory, IInventory furnaceInventory) 
 	{
 		this.TileEntityGrinder = furnaceInventory;
+		this.tileFurnace = furnaceInventory;
 		this.addSlotToContainer(new Slot(furnaceInventory, 0, 56, 17));
 		this.addSlotToContainer(new SlotGrinderFuel(furnaceInventory, 1, 56, 53));
 		this.addSlotToContainer(new SlotGrinderOutput(playerInventory.player, furnaceInventory, 2, 116, 35));
