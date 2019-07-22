@@ -1,0 +1,13 @@
+{
+    "variants": 
+    {
+        "burning=false,facing=north": { "model": "mm:grinder" },
+        "burning=false,facing=east": { "model": "mm:grinder", "y": 90 },
+        "burning=false,facing=south": { "model": "mm:grinder", "y": 180 },
+        "burning=false,facing=west": { "model": "mm:grinder", "y": 270 },
+        "burning=true,facing=north": { "model": "mm:grinder" },
+        "burning=true,facing=east": { "model": "mm:grinder", "y": 90 },
+        "burning=true,facing=south": { "model": "mm:grinder", "y": 180 },
+        "burning=true,facing=west": { "model": "mm:grinder", "y":270  }
+    }
+}
