@@ -1,2 +1,4 @@
 item.chisel.name=Chisel
 item.extracedironore.name=Extracted Iron Ore
+tile.grinder.name=Grinder
+itemGroup.metallurgy=Metallurgy

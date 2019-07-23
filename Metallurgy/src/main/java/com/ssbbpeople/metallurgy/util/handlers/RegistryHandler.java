@@ -3,7 +3,6 @@ package com.ssbbpeople.metallurgy.util.handlers;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-import com.ssbbpeople.metallurgy.blocks.tileentities.TileEntityGrinder;
 import com.ssbbpeople.metallurgy.init.ModBlocks;
 import com.ssbbpeople.metallurgy.init.ModItems;
 import com.ssbbpeople.metallurgy.util.IHasModel;

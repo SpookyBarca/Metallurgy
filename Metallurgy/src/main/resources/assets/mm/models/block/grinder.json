@@ -1,5 +1,5 @@
 {
-	"credit": "Made with Blockbench",
+	"parent": "block/cube",
 	"textures": {
 		"0": "mm:blocks/solid",
 		"1": "mm:blocks/blade",

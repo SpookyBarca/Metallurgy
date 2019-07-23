@@ -5,6 +5,7 @@ import com.ssbbpeople.metallurgy.init.ModItems;
 import com.ssbbpeople.metallurgy.init.ModRecipes;
 import com.ssbbpeople.metallurgy.proxy.CommonProxy;
 import com.ssbbpeople.metallurgy.util.Reference;
+import com.ssbbpeople.metallurgy.util.handlers.ModGuiHandler;
 
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
@@ -37,6 +38,7 @@ public class Main {
 	@Mod.EventHandler
 	public void PreInit(FMLPreInitializationEvent event)
 	{
+
 		NetworkRegistry.INSTANCE.registerGuiHandler(this, new ModGuiHandler());
 	}
 	
