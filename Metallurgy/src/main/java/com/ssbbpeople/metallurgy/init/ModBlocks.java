@@ -6,6 +6,7 @@ import java.util.List;
 import com.ssbbpeople.metallurgy.blocks.BlockBase;
 import com.ssbbpeople.metallurgy.blocks.ExtractedIronOre;
 import com.ssbbpeople.metallurgy.blocks.grinder.BlockGrinder;
+import com.ssbbpeople.metallurgy.blocks.grinder.TileGrinder;
 import com.ssbbpeople.metallurgy.util.Reference;
 
 import net.minecraft.block.Block;

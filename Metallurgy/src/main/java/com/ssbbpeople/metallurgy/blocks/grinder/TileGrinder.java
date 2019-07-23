@@ -1,10 +1,14 @@
 package com.ssbbpeople.metallurgy.blocks.grinder;
 
 import com.ssbbpeople.metallurgy.event.ModEventFactory;
+import com.ssbbpeople.metallurgy.util.handlers.IInventoryUser;
+import com.ssbbpeople.metallurgy.util.handlers.IModTileEntity;
+import com.ssbbpeople.metallurgy.util.handlers.ITileEntitySyncable;
 import com.ssbbpeople.metallurgy.util.handlers.ModItemStackHandler;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
@@ -27,7 +31,7 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
-public class TileGrinder extends TileEntity implements ITickable{
+public class TileGrinder extends TileEntity implements ITickable, IModTileEntity, ITileEntitySyncable, IInventoryUser{
 	
 	public static final int	INPUT_SLOT	= 0;
 	public static final int	FUEL_SLOT	= 1;
@@ -383,6 +387,26 @@ public class TileGrinder extends TileEntity implements ITickable{
 		}
 		return super.getCapability(capability, facing);
 	}
+	
+    public boolean isUsableByPlayer(EntityPlayer player)
+    {
+        if (this.world.getTileEntity(this.pos) != this)
+        {
+            return false;
+        }
+        else
+        {
+            return player.getDistanceSq((double)this.pos.getX() + 0.5D, (double)this.pos.getY() + 0.5D, (double)this.pos.getZ() + 0.5D) <= 64.0D;
+        }
+    }
+
+    public void openInventory(EntityPlayer player)
+    {
+    }
+
+    public void closeInventory(EntityPlayer player)
+    {
+    }
 	
 	//NBT and TileEntity data
 	@Override

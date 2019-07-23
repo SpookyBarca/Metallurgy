@@ -3,9 +3,11 @@ package com.ssbbpeople.metallurgy.util.handlers;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
+import com.ssbbpeople.metallurgy.blocks.grinder.TileGrinder;
 import com.ssbbpeople.metallurgy.init.ModBlocks;
 import com.ssbbpeople.metallurgy.init.ModItems;
 import com.ssbbpeople.metallurgy.util.IHasModel;
+import com.ssbbpeople.metallurgy.util.Reference;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
@@ -39,6 +41,7 @@ public class RegistryHandler {
 	public static void onBlockRegister(RegistryEvent.Register<Block> event) {
 		
 		event.getRegistry().registerAll(ModBlocks.BLOCKS.toArray(new Block[0]));
+        GameRegistry.registerTileEntity(TileGrinder.class, new ResourceLocation(Reference.MOD_ID + ":grinder"));
 	
 	}
 	
@@ -61,5 +64,6 @@ public class RegistryHandler {
 	}
 	
 	public static void initRegistries() {
-	}
+		}
 }
+	
