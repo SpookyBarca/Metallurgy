@@ -92,7 +92,7 @@ public class TileGrinder extends TileEntity implements ITickable, IModTileEntity
 						TileGrinder.this.maxSmeltTime = TileGrinder.this.getSmeltTime(input);
 					} else {
 						TileGrinder.this.smeltTime = 0;
-						TileGrinder.this.maxSmeltTime = 0;
+						TileGrinder.this.maxSmeltTime = 200;
 					}
 				}
 			}
