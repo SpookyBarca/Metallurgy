@@ -1,5 +1,8 @@
 package com.ssbbpeople.metallurgy;
 
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
+
 import com.ssbbpeople.metallurgy.blocks.grinder.TileGrinder;
 import com.ssbbpeople.metallurgy.init.ModBlocks;
 import com.ssbbpeople.metallurgy.init.ModItems;
@@ -58,7 +61,6 @@ public class Main {
 	{
 		
 	}
-	
 	
 	
 }

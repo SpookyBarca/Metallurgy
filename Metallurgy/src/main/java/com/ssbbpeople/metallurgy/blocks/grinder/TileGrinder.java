@@ -9,8 +9,10 @@ import com.ssbbpeople.metallurgy.util.handlers.ModItemStackHandler;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.inventory.Container;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBoat;
 import net.minecraft.item.ItemDoor;
@@ -27,6 +29,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IInteractionObject;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
@@ -44,6 +47,8 @@ public class TileGrinder extends TileEntity implements ITickable, IModTileEntity
 	public static final String	SMELT_TIME_TAG			= "smeltTime";
 	public static final String	MAX_FUEL_TIME_TAG		= "maxFuelTime";
 	public static final String	MAX_SMELT_TIME_TAG		= "maxSmeltTime";
+	
+	private String furnaceCustomName;
 
 	private final ModItemStackHandler inventory;
 

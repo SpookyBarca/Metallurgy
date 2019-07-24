@@ -8,6 +8,7 @@ import com.ssbbpeople.metallurgy.blocks.grinder.TileGrinder;
 
 import net.minecraft.client.gui.Gui;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -17,9 +18,13 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class ModGuiHandler implements IGuiHandler {
 
-	public static final int MOD_GRINDER = 2;
+	public static final int MOD_GRINDER = 0;
 	
-	//Gets server GUI element, @return a {@link net.minecraft.inventory.Container Container} for the server
+	/**
+	 * gets the server's part of a Gui
+	 * @return a {@link net.minecraft.inventory.Container Container} for the server
+	 */
+	@Override
 	@Nullable
 	public Container getServerGuiElement(final int ID, final EntityPlayer player, final World world, final int x, final int y, final int z) {
 		switch (ID) {
@@ -28,14 +33,19 @@ public class ModGuiHandler implements IGuiHandler {
 		default:
 			return null;
 		}
-	}
+		}
+		
+	/**
+	 * gets the client's part of a Gui
+	 * @return a {@link net.minecraft.client.gui.GuiScreen GuiScreen} for the client
+	 */
+	@Override
 	@Nullable
 	@SideOnly(Side.CLIENT)
 	public Gui getClientGuiElement(final int ID, final EntityPlayer player, final World world, final int x, final int y, final int z) {
 		switch (ID) {
 		case MOD_GRINDER:
 			return new GuiModGrinder(player.inventory, (TileGrinder) world.getTileEntity(new BlockPos(x, y, z)));
-		
 		default:
 			return null;
 		}

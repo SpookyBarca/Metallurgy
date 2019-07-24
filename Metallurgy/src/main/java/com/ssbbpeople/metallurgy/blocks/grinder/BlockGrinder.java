@@ -54,19 +54,13 @@ public class BlockGrinder extends Block {
 	//When right-clicked
 		@Override
 		public boolean onBlockActivated(final World worldIn, final BlockPos pos, final IBlockState state, final EntityPlayer playerIn, final EnumHand hand, final EnumFacing facing, final float hitX, final float hitY, final float hitZ) {
-			if (worldIn.isRemote) {
-				return true;
+			if (!worldIn.isRemote) {
 			} else {
-				final TileEntity tileentity = worldIn.getTileEntity(pos);
-
-				if (tileentity instanceof TileGrinder) {
 					playerIn.openGui(Main.instance, ModGuiHandler.MOD_GRINDER, worldIn, pos.getX(), pos.getY(), pos.getZ());
 					playerIn.addStat(StatList.FURNACE_INTERACTION);
 				}
-
 				return true;
 			}
-		}
 		
 		@Override
 		public boolean hasComparatorInputOverride(final IBlockState state) {
