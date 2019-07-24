@@ -26,8 +26,8 @@ public class ModGuiHandler implements IGuiHandler {
 	 */
 	@Override
 	@Nullable
-	public Container getServerGuiElement(final int ID, final EntityPlayer player, final World world, final int x, final int y, final int z) {
-		switch (ID) {
+	public Container getServerGuiElement(final int id, final EntityPlayer player, final World world, final int x, final int y, final int z) {
+		switch (id) {
 		case MOD_GRINDER:
 			return new GrinderContainer(player.inventory, (TileGrinder) world.getTileEntity(new BlockPos(x, y, z)));
 		default:
@@ -42,8 +42,8 @@ public class ModGuiHandler implements IGuiHandler {
 	@Override
 	@Nullable
 	@SideOnly(Side.CLIENT)
-	public Gui getClientGuiElement(final int ID, final EntityPlayer player, final World world, final int x, final int y, final int z) {
-		switch (ID) {
+	public Gui getClientGuiElement(final int id, final EntityPlayer player, final World world, final int x, final int y, final int z) {
+		switch (id) {
 		case MOD_GRINDER:
 			return new GuiModGrinder(player.inventory, (TileGrinder) world.getTileEntity(new BlockPos(x, y, z)));
 		default:

@@ -42,7 +42,7 @@ public class Main {
 	public static CommonProxy proxy;
 	
 	@Mod.EventHandler
-	public void PreInit(FMLPreInitializationEvent event)
+	public void preInit(FMLPreInitializationEvent event)
 	{
 
 		NetworkRegistry.INSTANCE.registerGuiHandler(this, new ModGuiHandler());
@@ -57,7 +57,7 @@ public class Main {
 	}
 	
 	@EventHandler
-	public static void PostInit(FMLPostInitializationEvent event)
+	public static void postInit(FMLPostInitializationEvent event)
 	{
 		
 	}

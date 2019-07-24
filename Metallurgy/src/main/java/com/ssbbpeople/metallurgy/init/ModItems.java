@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.ssbbpeople.metallurgy.blocks.BlockBase;
+import com.ssbbpeople.metallurgy.blocks.grinder.BlockGrinder;
 import com.ssbbpeople.metallurgy.items.Chisel;
 import com.ssbbpeople.metallurgy.items.ItemBase;
 
@@ -19,6 +20,4 @@ public class ModItems
 	
 	public static final Item CHISEL = new Chisel("chisel");
 	public static final Item PULVERIZED_IRON = new ItemBase("pulverized_iron");
-	public static final BlockBase GRINDER = new BlockBase("grinder", Material.IRON);
-	
 }

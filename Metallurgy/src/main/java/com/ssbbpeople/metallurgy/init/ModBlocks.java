@@ -25,7 +25,7 @@ public class ModBlocks
 	public static final List<Block> BLOCKS = new ArrayList<Block>();
 	
 	public static final Block EXTRACTED_IRON_ORE = new ExtractedIronOre("extracted_iron_ore", Material.IRON);
-	public static final Block GRINDER = new BlockGrinder();;
+	public static final Block MOD_GRINDER = new BlockGrinder("grinder");
 	
 	//@GameRegistry.ObjectHolder("mm:grinder")
 	//public static BlockGrinder grinderBlock;

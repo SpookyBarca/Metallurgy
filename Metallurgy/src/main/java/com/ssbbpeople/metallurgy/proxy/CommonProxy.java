@@ -19,12 +19,12 @@ public class CommonProxy {
 
     @SubscribeEvent
     public static void registerBlocks(RegistryEvent.Register<Block> event) {
-        event.getRegistry().register(new BlockGrinder());
+        event.getRegistry().register(new BlockGrinder("grinder"));
     }
 
     @SubscribeEvent
     public static void registerItems(RegistryEvent.Register<Item> event) {
-        event.getRegistry().register(new ItemBlock(ModBlocks.GRINDER).setRegistryName(ModBlocks.GRINDER.getRegistryName()));
+        event.getRegistry().register(new ItemBlock(ModBlocks.MOD_GRINDER).setRegistryName(ModBlocks.MOD_GRINDER.getRegistryName()));
     }
     
 

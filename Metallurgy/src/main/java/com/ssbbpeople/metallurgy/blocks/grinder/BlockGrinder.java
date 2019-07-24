@@ -9,6 +9,8 @@ import com.ssbbpeople.metallurgy.util.handlers.ModGuiHandler;
 import com.ssbbpeople.metallurgy.util.handlers.ModItemStackHandler;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockFurnace;
+import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.BlockStateContainer;
@@ -21,6 +23,7 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.stats.StatList;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
@@ -30,12 +33,12 @@ import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class BlockGrinder extends Block {
+public class BlockGrinder extends BlockHorizontal {
 
 	public static final ResourceLocation GRINDER = new ResourceLocation(Reference.MOD_ID, "grinder");
     public static final PropertyDirection FACING = PropertyDirection.create("facing");
 	
-	public BlockGrinder() {
+	public BlockGrinder(String name) {
 		super(Material.IRON);
 		//main:furnace
 		setRegistryName("grinder");
@@ -45,6 +48,18 @@ public class BlockGrinder extends Block {
 		
         setDefaultState(blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
 	}
+	
+
+	@Override
+	public boolean hasTileEntity(final IBlockState state) {
+		return true;
+	}
+	
+	@Override
+	public TileGrinder createTileEntity(final World world, final IBlockState state) {
+		return new TileGrinder();
+	}
+	
 	//Registers block to CLIENT side
 	   @SideOnly(Side.CLIENT)
 	    public void initModel() {
@@ -54,13 +69,19 @@ public class BlockGrinder extends Block {
 	//When right-clicked
 		@Override
 		public boolean onBlockActivated(final World worldIn, final BlockPos pos, final IBlockState state, final EntityPlayer playerIn, final EnumHand hand, final EnumFacing facing, final float hitX, final float hitY, final float hitZ) {
-			if (!worldIn.isRemote) {
+			if (worldIn.isRemote) {
+				return true;
 			} else {
+				final TileEntity tileentity = worldIn.getTileEntity(pos);
+
+				if (tileentity instanceof TileGrinder) {
 					playerIn.openGui(Main.instance, ModGuiHandler.MOD_GRINDER, worldIn, pos.getX(), pos.getY(), pos.getZ());
 					playerIn.addStat(StatList.FURNACE_INTERACTION);
 				}
+
 				return true;
 			}
+		}
 		
 		@Override
 		public boolean hasComparatorInputOverride(final IBlockState state) {

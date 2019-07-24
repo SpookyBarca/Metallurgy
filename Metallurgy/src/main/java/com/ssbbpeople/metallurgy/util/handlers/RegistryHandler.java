@@ -3,6 +3,7 @@ package com.ssbbpeople.metallurgy.util.handlers;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
+import com.ssbbpeople.metallurgy.blocks.grinder.GrinderContainer;
 import com.ssbbpeople.metallurgy.blocks.grinder.TileGrinder;
 import com.ssbbpeople.metallurgy.init.ModBlocks;
 import com.ssbbpeople.metallurgy.init.ModItems;
@@ -65,5 +66,9 @@ public class RegistryHandler {
 	
 	public static void initRegistries() {
 		}
+	
+	//public static void registerContainers(final RegistryEvent.Register<GrinderContainer<?>> event) {
+		
+//	}
 }
 	
