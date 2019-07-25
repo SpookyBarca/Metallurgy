@@ -36,6 +36,10 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
+//PROBLEM(S)/BUG(S):
+//1. When there is fuel, it Consumes 1 Fuel, then after a period of time, it instantly smelts.
+//2. Instantly smelts with no fuel(REDSTONE) in FUEL_SLOT
+
 public class TileGrinder extends TileEntity implements ITickable, IModTileEntity, ITileEntitySyncable, IInventoryUser{
 	
 	public static final int	INPUT_SLOT	= 0;
@@ -65,8 +69,8 @@ public class TileGrinder extends TileEntity implements ITickable, IModTileEntity
 
 	public int getMaxSmeltTime() {
 		//Debug print for max smelt time
-    	System.out.println("Set Max Smelt Time");
-		return this.maxSmeltTime;
+    	//System.out.println("Set Max Smelt Time");
+		return this.smeltTime;
 	}
 
 	public int getFuelTimeRemaining() {
@@ -158,17 +162,21 @@ public class TileGrinder extends TileEntity implements ITickable, IModTileEntity
 			if (canSmeltItem()) smelt();
 		}
 		
-		if (this.smeltTime == this.maxSmeltTime) {
-		//Debug print for smelt time
-    	System.out.println("Smelt Time Set");
+		if (this.isOn() && this.canSmeltItem())
+        {
+			++this.smeltTime;
+			
+			if (this.smeltTime == this.maxSmeltTime) {
+				//Debug print for smelt time
+				System.out.println("Smelt Time Set");
     			this.smeltTime = 0;
-                this.maxSmeltTime = this.getMaxSmeltTime();
+                this.maxSmeltTime = this.getSmeltTime(this.grinderItemStacks.get(0));
                 this.canSmeltItem();
                 isBurning = true;
-		}
-		else {
+		} else {
 			smeltTime = 0;
 		}
+        }
 		
          if (!this.isOn() && this.smeltTime > 0)
         {
@@ -244,8 +252,6 @@ public class TileGrinder extends TileEntity implements ITickable, IModTileEntity
 		if (this.fuelTimeRemaining <= 0) {
 			return;
 		}
-
-		this.smeltTime++;
 	}
 	private boolean shouldSmelt() {
 
@@ -296,7 +302,7 @@ public class TileGrinder extends TileEntity implements ITickable, IModTileEntity
             }
         }
 		this.smeltTime = 0;
-
+		this.smeltTime++;
 		//Slots and their names
 		final ItemStack input = this.getInventory().getStackInSlot(INPUT_SLOT);
 		final ItemStack result = GrinderRecipes.instance().getGrindingResult(input);
@@ -319,7 +325,6 @@ public class TileGrinder extends TileEntity implements ITickable, IModTileEntity
 		} else {
 			//Debug print for checking if the max smelt time is correct
 			System.out.println("Set Max Smelt Time");
-			input.shrink(1);
 			this.maxSmeltTime = getSmeltTime();
 		}
 
