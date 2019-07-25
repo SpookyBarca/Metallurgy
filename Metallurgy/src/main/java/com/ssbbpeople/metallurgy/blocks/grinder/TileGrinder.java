@@ -91,7 +91,7 @@ public class TileGrinder extends TileEntity implements ITickable, IModTileEntity
 					if(!input.isEmpty()) {
 						TileGrinder.this.maxSmeltTime = TileGrinder.this.getSmeltTime(input);
 					} else {
-						TileGrinder.this.smeltTime = 0;
+						TileGrinder.this.smeltTime = maxFuelTime;
 						TileGrinder.this.maxSmeltTime = 200;
 					}
 				}
@@ -171,8 +171,10 @@ public class TileGrinder extends TileEntity implements ITickable, IModTileEntity
 
 		this.fuelTimeRemaining = TileGrinder.getItemBurnTime(fuel.copy());
 
-		this.maxFuelTime = this.fuelTimeRemaining;
-
+		this.smeltTime = this.fuelTimeRemaining;
+		
+		//Debug print for fuel shrink
+    	System.out.println("Fuel Consumed");
 		fuel.shrink(1);
 
 		if (!fuel.isEmpty()) {
@@ -272,8 +274,6 @@ public class TileGrinder extends TileEntity implements ITickable, IModTileEntity
             {
                 itemstack2.grow(itemstack1.getCount());
             }
-
-            itemstack.shrink(1);
         }
 		this.smeltTime = 0;
 
@@ -288,7 +288,8 @@ public class TileGrinder extends TileEntity implements ITickable, IModTileEntity
 		} else if (output.isItemEqual(result)) {
 			output.grow(result.getCount());
 		}
-
+		
+		System.out.println("Input Smelted");
 		input.shrink(1);
 
 		if (!input.isEmpty()) {
@@ -484,5 +485,3 @@ public class TileGrinder extends TileEntity implements ITickable, IModTileEntity
 		return compound;
 	}
 }
-
-
