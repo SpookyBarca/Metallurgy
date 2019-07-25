@@ -30,6 +30,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.IInteractionObject;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -63,6 +64,8 @@ public class TileGrinder extends TileEntity implements ITickable, IModTileEntity
 	}
 
 	public int getMaxSmeltTime() {
+		//Debug print for max smelt time
+    	System.out.println("Set Max Smelt Time");
 		return this.maxSmeltTime;
 	}
 
@@ -91,8 +94,7 @@ public class TileGrinder extends TileEntity implements ITickable, IModTileEntity
 					if(!input.isEmpty()) {
 						TileGrinder.this.maxSmeltTime = TileGrinder.this.getSmeltTime(input);
 					} else {
-						TileGrinder.this.smeltTime = maxFuelTime;
-						TileGrinder.this.maxSmeltTime = 200;
+						TileGrinder.this.maxSmeltTime = getSmeltTime();
 					}
 				}
 			}
@@ -140,20 +142,38 @@ public class TileGrinder extends TileEntity implements ITickable, IModTileEntity
 
 	@Override
 	public void update () {
-		if (this.fuelTimeRemaining >0) {
-			this.fuelTimeRemaining--;
-		}
-		
-		this.getWorld().checkLight(this.getPos());
-		
-		if(this.world.isRemote) {
-			return;
-		}
+		if(this.world.isRemote) {return;}
 		this.burnFuel();
 		this.smelt();
 		this.trySmeltItem();
 		//this.syncToClients();
 		this.markDirty();
+	
+		ItemStack fuel = ItemStack.EMPTY;
+		boolean canSmeltItem = canSmeltItem();
+		boolean isBurning = isOn();
+		
+		if (this.isOn()) {
+			smeltTime--;
+			if (canSmeltItem()) smelt();
+		}
+		
+		if (this.smeltTime == this.maxSmeltTime) {
+		//Debug print for smelt time
+    	System.out.println("Smelt Time Set");
+    			this.smeltTime = 0;
+                this.maxSmeltTime = this.getMaxSmeltTime();
+                this.canSmeltItem();
+                isBurning = true;
+		}
+		else {
+			smeltTime = 0;
+		}
+		
+         if (!this.isOn() && this.smeltTime > 0)
+        {
+            this.smeltTime = MathHelper.clamp(this.smeltTime - 2, 0, this.maxSmeltTime);
+        }
 	}
 	//Burns fuel from the Grinder
 	private void burnFuel () {
@@ -251,9 +271,9 @@ public class TileGrinder extends TileEntity implements ITickable, IModTileEntity
 	}
 	
 	private void trySmeltItem() {
-
-		if ((this.fuelTimeRemaining <= 0) && (this.smeltTime > 0)) {
-			this.smeltTime--;
+		
+		if (this.smeltTime > 0) {
+			return;
 		}
 
 		if (!this.shouldSmelt()) {
@@ -277,25 +297,30 @@ public class TileGrinder extends TileEntity implements ITickable, IModTileEntity
         }
 		this.smeltTime = 0;
 
-	  
-		//Replace FR with GR
+		//Slots and their names
 		final ItemStack input = this.getInventory().getStackInSlot(INPUT_SLOT);
 		final ItemStack result = GrinderRecipes.instance().getGrindingResult(input);
 		final ItemStack output = this.getInventory().getStackInSlot(OUTPUT_SLOT);
-
+		
+		//Increases Output slot
 		if (output.isEmpty()) {
 			this.getInventory().setStackInSlot(OUTPUT_SLOT, result.copy());
 		} else if (output.isItemEqual(result)) {
 			output.grow(result.getCount());
 		}
 		
+		//Debug print for shrink -1
 		System.out.println("Input Smelted");
 		input.shrink(1);
-
+		this.maxSmeltTime = getSmeltTime();
+		
 		if (!input.isEmpty()) {
-			this.maxSmeltTime = this.getSmeltTime(input);
+			this.maxSmeltTime = this.getSmeltTime();
 		} else {
-			this.maxSmeltTime = 0;
+			//Debug print for checking if the max smelt time is correct
+			System.out.println("Set Max Smelt Time");
+			input.shrink(1);
+			this.maxSmeltTime = getSmeltTime();
 		}
 
 	}
@@ -311,7 +336,6 @@ public class TileGrinder extends TileEntity implements ITickable, IModTileEntity
         }
         else
         {
-        	//Replace FR with GR
             ItemStack itemstack = GrinderRecipes.instance().getGrindingResult(this.grinderItemStacks.get(0));
 
             if (itemstack.isEmpty())
@@ -351,7 +375,7 @@ public class TileGrinder extends TileEntity implements ITickable, IModTileEntity
 		if (smeltTime >= 0) {
 			return smeltTime;
 		}
-		return 200;
+		return 0;
 	}
 	public ModItemStackHandler getInventory() {
 		return this.inventory;
