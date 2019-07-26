@@ -37,8 +37,11 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
 //PROBLEM(S)/BUG(S):
-//1. When there is fuel, it Consumes 1 Fuel, then after a period of time, it instantly smelts.
-//2. Instantly smelts with no fuel(REDSTONE) in FUEL_SLOT
+//Problems Solved!
+//One more issue:
+//Once its done smelting for the first time, it outputs correctly. 
+//Once its done anytime after that, it doesn't output at all.
+
 
 public class TileGrinder extends TileEntity implements ITickable, IModTileEntity, ITileEntitySyncable, IInventoryUser{
 	
@@ -64,13 +67,13 @@ public class TileGrinder extends TileEntity implements ITickable, IModTileEntity
 	private int	maxSmeltTime;
 	
 	public int getMaxFuelTime() {
+		//Change
 		return this.maxFuelTime;
 	}
 
 	public int getMaxSmeltTime() {
-		//Debug print for max smelt time
-    	//System.out.println("Set Max Smelt Time");
-		return this.smeltTime;
+		
+		return this.maxSmeltTime;
 	}
 
 	public int getFuelTimeRemaining() {
@@ -146,74 +149,71 @@ public class TileGrinder extends TileEntity implements ITickable, IModTileEntity
 
 	@Override
 	public void update () {
-		if(this.world.isRemote) {return;}
+		if (this.fuelTimeRemaining > 0) {
+			this.fuelTimeRemaining--;
+		}
+
+		this.getWorld().checkLight(this.getPos());
+
+		if (this.world.isRemote) {
+			return;
+		}
+
 		this.burnFuel();
+
 		this.smelt();
+
 		this.trySmeltItem();
-		//this.syncToClients();
+
+		this.syncToClients();
+
 		this.markDirty();
-	
-		ItemStack fuel = ItemStack.EMPTY;
-		boolean canSmeltItem = canSmeltItem();
-		boolean isBurning = isOn();
-		
-		if (this.isOn()) {
-			smeltTime--;
-			if (canSmeltItem()) smelt();
-		}
-		
-		if (this.isOn() && this.canSmeltItem())
-        {
-			++this.smeltTime;
-			
-			if (this.smeltTime == this.maxSmeltTime) {
-				//Debug print for smelt time
-				System.out.println("Smelt Time Set");
-    			this.smeltTime = 0;
-                this.maxSmeltTime = this.getSmeltTime(this.grinderItemStacks.get(0));
-                this.canSmeltItem();
-                isBurning = true;
-		} else {
-			smeltTime = 0;
-		}
-        }
-		
-         if (!this.isOn() && this.smeltTime > 0)
-        {
-            this.smeltTime = MathHelper.clamp(this.smeltTime - 2, 0, this.maxSmeltTime);
-        }
 	}
-	//Burns fuel from the Grinder
-	private void burnFuel () {
+	
+	private void smelt() {
+
 		if (!this.shouldSmelt()) {
 			return;
 		}
-		if (this.fuelTimeRemaining > 0) {
-			return;
-		}
-		final ItemStack fuel = this.getInventory().getStackInSlot(FUEL_SLOT);
-		
-		if (fuel.isEmpty()) {
+
+		if (this.fuelTimeRemaining <= 0) {
 			return;
 		}
 
-		this.fuelTimeRemaining = TileGrinder.getItemBurnTime(fuel.copy());
+		this.smeltTime++;
+	}
+	
+	//Burns fuel from the Grinder
+		private void burnFuel() {
 
-		this.smeltTime = this.fuelTimeRemaining;
-		
-		//Debug print for fuel shrink
-    	System.out.println("Fuel Consumed");
-		fuel.shrink(1);
+			if (!this.shouldSmelt()) {
+				return;
+			}
 
-		if (!fuel.isEmpty()) {
-			return;
-		}
+			if (this.fuelTimeRemaining > 0) {
+				return;
+			}
 
-		final ItemStack containerItem = fuel.getItem().getContainerItem(fuel.copy());
+			final ItemStack fuel = this.getInventory().getStackInSlot(FUEL_SLOT);
 
-		if (!containerItem.isEmpty()) {
-			this.getInventory().setStackInSlot(FUEL_SLOT, containerItem.copy());
-		}
+			if (fuel.isEmpty()) {
+				return;
+			}
+
+			this.fuelTimeRemaining = TileGrinder.getItemBurnTime(fuel.copy());
+			this.maxFuelTime = this.fuelTimeRemaining;
+
+			fuel.shrink(1);
+
+			if (!fuel.isEmpty()) {
+				return;
+			}
+
+			final ItemStack containerItem = fuel.getItem().getContainerItem(fuel.copy());
+
+			if (!containerItem.isEmpty()) {
+				this.getInventory().setStackInSlot(FUEL_SLOT, containerItem.copy());
+			}
 	}
 	
 	//Burn time for items, note that other items can be inserted but wont do anything.
@@ -230,29 +230,17 @@ public class TileGrinder extends TileEntity implements ITickable, IModTileEntity
 
             if (item == Items.REDSTONE)
             {
-                return 300;
+                return 100;
             }
             else if (item == Item.getItemFromBlock(Blocks.REDSTONE_BLOCK))
             {
-                return 3200;
+                return 1000;
             }
            }
         {
             return 0;
         }
     }
-
-	//Tells the Grinder to "Smelt"
-	private void smelt() {
-
-		if (!this.shouldSmelt()) {
-			return;
-		}
-
-		if (this.fuelTimeRemaining <= 0) {
-			return;
-		}
-	}
 	private boolean shouldSmelt() {
 
 		//Replace FR with GR
@@ -277,55 +265,40 @@ public class TileGrinder extends TileEntity implements ITickable, IModTileEntity
 	}
 	
 	private void trySmeltItem() {
-		
-		if (this.smeltTime > 0) {
-			return;
+
+		if ((this.fuelTimeRemaining <= 0) && (this.smeltTime > 0)) {
+			this.smeltTime--;
 		}
 
 		if (!this.shouldSmelt()) {
 			return;
 		}
 
-        if (this.canSmeltItem())
-        {
-            ItemStack itemstack = this.grinderItemStacks.get(0);
-            ItemStack itemstack1 = FurnaceRecipes.instance().getSmeltingResult(itemstack);
-            ItemStack itemstack2 = this.grinderItemStacks.get(2);
-
-            if (itemstack2.isEmpty())
-            {
-                this.grinderItemStacks.set(2, itemstack1.copy());
-            }
-            else if (itemstack2.getItem() == itemstack1.getItem())
-            {
-                itemstack2.grow(itemstack1.getCount());
-            }
-        }
+		if (!this.canSmeltItem()) {
+			return;
+		}
 		this.smeltTime = 0;
-		this.smeltTime++;
-		//Slots and their names
+
 		final ItemStack input = this.getInventory().getStackInSlot(INPUT_SLOT);
 		final ItemStack result = GrinderRecipes.instance().getGrindingResult(input);
 		final ItemStack output = this.getInventory().getStackInSlot(OUTPUT_SLOT);
-		
-		//Increases Output slot
+
 		if (output.isEmpty()) {
 			this.getInventory().setStackInSlot(OUTPUT_SLOT, result.copy());
 		} else if (output.isItemEqual(result)) {
 			output.grow(result.getCount());
 		}
-		
-		//Debug print for shrink -1
-		System.out.println("Input Smelted");
+
+		if ((input.getItem() == Item.getItemFromBlock(Blocks.SPONGE)) && (input.getMetadata() == 1) && !this.getInventory().getStackInSlot(FUEL_SLOT).isEmpty() && (this.getInventory().getStackInSlot(FUEL_SLOT).getItem() == Items.BUCKET)) {
+			this.getInventory().setStackInSlot(FUEL_SLOT, new ItemStack(Items.WATER_BUCKET));
+		}
+
 		input.shrink(1);
-		this.maxSmeltTime = getSmeltTime();
-		
+
 		if (!input.isEmpty()) {
-			this.maxSmeltTime = this.getSmeltTime();
+			this.maxSmeltTime = this.getSmeltTime(input);
 		} else {
-			//Debug print for checking if the max smelt time is correct
-			System.out.println("Set Max Smelt Time");
-			this.maxSmeltTime = getSmeltTime();
+			this.maxSmeltTime = 0;
 		}
 
 	}
@@ -333,54 +306,40 @@ public class TileGrinder extends TileEntity implements ITickable, IModTileEntity
 	   /**
      * Returns true if the furnace can smelt an item, i.e. has a source item, destination stack isn't full, etc.
      */
-    private boolean canSmeltItem()
-    {
-        if (((ItemStack)this.grinderItemStacks.get(0)).isEmpty())
-        {
-            return false;
-        }
-        else
-        {
-            ItemStack itemstack = GrinderRecipes.instance().getGrindingResult(this.grinderItemStacks.get(0));
+	private boolean canSmeltItem() {
 
-            if (itemstack.isEmpty())
-            {
-                return false;
-            }
-            else
-            {
-                ItemStack itemstack1 = this.grinderItemStacks.get(2);
+		if (!this.shouldSmelt()) {
+			return false;
+		}
 
-                if (itemstack1.isEmpty())
-                {
-                    return true;
-                }
-                else if (!itemstack1.isItemEqual(itemstack))
-                {
-                    return false;
-                }
-                else if (itemstack1.getCount() + itemstack.getCount() <= this.getInventoryStackLimit() && itemstack1.getCount() + itemstack.getCount() <= itemstack1.getMaxStackSize())  // Forge fix: make furnace respect stack sizes in furnace recipes
-                {
-                    return true;
-                }
-                else
-                {
-                    return itemstack1.getCount() + itemstack.getCount() <= itemstack.getMaxStackSize(); // Forge fix: make furnace respect stack sizes in furnace recipes
-                }
-            }
-        }
-    }
+		if (this.fuelTimeRemaining <= 0) {
+			return false;
+		}
 
+		final ItemStack input = this.getInventory().getStackInSlot(INPUT_SLOT);
+
+		if (this.smeltTime >= this.maxSmeltTime) {
+			final ItemStack output = this.getInventory().getStackInSlot(OUTPUT_SLOT);
+			final ItemStack result = FurnaceRecipes.instance().getSmeltingResult(input);
+
+			if (output.isEmpty() || output.isItemEqual(result)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	//Get is technically set in this case...
 	private int getInventoryStackLimit() {
 		return 64;
 	}
 
+	
 	public int getSmeltTime(final ItemStack input) {
 		final int smeltTime = ModEventFactory.getItemSmeltTime(input);
 		if (smeltTime >= 0) {
 			return smeltTime;
 		}
-		return 0;
+		return 200;
 	}
 	public ModItemStackHandler getInventory() {
 		return this.inventory;
